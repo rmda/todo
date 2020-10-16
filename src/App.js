@@ -1,4 +1,6 @@
 import React from 'react';
+import InputArea from './InputArea/InputArea';
+import DisplayList from './DisplayList/DisplayList';
 import './App.css';
 
 class App extends React.Component {
@@ -12,11 +14,18 @@ class App extends React.Component {
       ],
       currentItem: "Shopping"
     };
-    
+
+    this.eventA = this.eventA.bind(this);
     this.handleItemAdd = this.handleItemAdd.bind(this);
     this.handleTextChange = this.handleTextChange.bind(this);
   }
 
+  eventA() {
+    // var state = this.state;
+    console.log('eventA');
+    // I will remove the item here
+    // this.setState(state);
+  }
 
   handleItemAdd(e) {
     var state = this.state;
@@ -25,22 +34,19 @@ class App extends React.Component {
   }
 
   handleTextChange(newText) {
-    // This is probably the most simple example how to update state and trigger a render event. Except
-    // we don't trigger render of our parent component, we only trigger the onChange for our textbox. 
-    // Exciting, isn't it?
-
-    // Pull current state
     var state = this.state;
-    state.currentItem = newText; // Assign value to newly created state
-    // Then push new state via setState
+    state.currentItem = newText;
     this.setState(state);
   }
 
   render() {
-    const input = this.state.currentItem; // notice const
+    const input = this.state.currentItem;
+    
+    var evenMoreProps  = this.props;
+    var evenMoreState = this.state;
     return (
       <div className="parent">
-        <DisplayList list={this.state.list} />
+        <DisplayList list={this.state.list}  callUpwardsAgain={this.eventA}/>
         <InputArea text={input} onTextChanged={this.handleTextChange} onItemAdd={this.handleItemAdd} />
       </div>
     );
@@ -49,38 +55,3 @@ class App extends React.Component {
 
 export default App;
 
-function DisplayItem(props) {
-  return <li>{props.item.name}</li>;
-}
-
-function DisplayList(props) {
-  return <div className="list"><ul> {props.list.map(elem => <DisplayItem item={elem} key={elem.id} />)} </ul></div>;
-}
-
-class InputArea extends React.Component {
-  constructor(props) {
-    super(props);
-     this.handleClick = this.handleClick.bind(this);
-     this.handleChange = this.handleChange.bind(this);
-  }
-
-    // lifting the state up
-  handleClick(e) {
-    this.props.onItemAdd(e.target.value);
-  }
-
-  handleChange(e) {
-    this.props.onTextChanged(e.target.value);
-  }
-
-  render() {
-    var currentItem = this.props.text;
-    return (
-      <div className="add-item">
-        <h3>Add something to do:</h3>
-        <input type="text" value={currentItem} onChange={this.handleChange} />
-        <input type="button" value="Add to list" onClick={this.handleClick} />
-      </div>
-    );
-  }
-}
