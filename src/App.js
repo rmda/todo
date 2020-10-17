@@ -1,6 +1,4 @@
 import React from 'react';
-import InputArea from './InputArea/InputArea';
-import DisplayList from './DisplayList/DisplayList';
 import './App.css';
 
 class App extends React.Component {
@@ -12,42 +10,32 @@ class App extends React.Component {
         { id: 0, name: "Laundry" },
         { id: 1, name: "Groceries" }
       ],
-      currentItem: "Shopping"
+      input: "Shopping"
     };
 
-    this.eventA = this.eventA.bind(this);
-    this.handleItemAdd = this.handleItemAdd.bind(this);
-    this.handleTextChange = this.handleTextChange.bind(this);
+    this.addItem = this.addItem.bind(this);
+    this.textChanged = this.textChanged.bind(this);
   }
 
-  eventA() {
-    // var state = this.state;
-    console.log('eventA');
-    // I will remove the item here
-    // this.setState(state);
-  }
-
-  handleItemAdd(e) {
+  addItem(e) {
     var state = this.state;
-    state.list.push({ id: state.list.length, name: state.currentItem });
+    state.list.push({ id: state.list.length, name: state.input });
     this.setState(state);
   }
 
-  handleTextChange(newText) {
-    var state = this.state;
-    state.currentItem = newText;
-    this.setState(state);
+  textChanged(e) {
+    this.setState({ input: e.target.value });
   }
 
   render() {
-    const input = this.state.currentItem;
-    
-    var evenMoreProps  = this.props;
-    var evenMoreState = this.state;
     return (
       <div className="parent">
-        <DisplayList list={this.state.list}  callUpwardsAgain={this.eventA}/>
-        <InputArea text={input} onTextChanged={this.handleTextChange} onItemAdd={this.handleItemAdd} />
+        <TodoList items={this.state.list} />
+        <div className="add-item">
+          <h3>Add something to do:</h3>
+          <input type="text" value={this.state.input} onChange={this.textChanged} />
+          <input type="button" value="Add to list" onClick={this.addItem} />
+        </div>
       </div>
     );
   }
@@ -55,3 +43,12 @@ class App extends React.Component {
 
 export default App;
 
+function TodoList(props) {
+  return (<div className="list">
+    <ul>
+      {props.items.map(
+        elem => <li key={elem.id}>{elem.name}</li>
+      )}
+    </ul>
+  </div>);
+}
