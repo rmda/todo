@@ -7,19 +7,26 @@ class App extends React.Component {
 
     this.state = {
       list: [
-        { id: 0, name: "Laundry" },
-        { id: 1, name: "Groceries" }
+        { id: 0, description: "Laundry" },
+        { id: 1, description: "Groceries" }
       ],
       input: "Shopping"
     };
 
     this.addItem = this.addItem.bind(this);
+    this.appRemoveItem = this.appRemoveItem.bind(this);
     this.textChanged = this.textChanged.bind(this);
   }
 
-  addItem(e) {
+  addItem() {
     var state = this.state;
-    state.list.push({ id: state.list.length, name: state.input });
+    state.list.push({ id: state.list.length, description: state.input });
+    this.setState(state);
+  }
+
+  appRemoveItem(index) {
+    var state = this.state;
+    state.list.splice(index, 1);
     this.setState(state);
   }
 
@@ -28,14 +35,18 @@ class App extends React.Component {
   }
 
   render() {
+    var todoElements = this.state.list.map(
+      (elem, idx) => (<TodoListItem key={idx} index={idx}
+        value={elem.description}
+        propRemoveItem={this.appRemoveItem} />)
+    );
     return (
-      <div className="parent">
-        <TodoList items={this.state.list} />
-        <div className="add-item">
-          <h3>Add something to do:</h3>
+      <div className="container">
+        <div className="item-input">
           <input type="text" value={this.state.input} onChange={this.textChanged} />
-          <input type="button" value="Add to list" onClick={this.addItem} />
+          <input type="button" value="Add item" onClick={this.addItem} />
         </div>
+        <div className="todo-list">{todoElements}</div>
       </div>
     );
   }
@@ -43,12 +54,18 @@ class App extends React.Component {
 
 export default App;
 
-function TodoList(props) {
-  return (<div className="list">
-    <ul>
-      {props.items.map(
-        elem => <li key={elem.id}>{elem.name}</li>
-      )}
-    </ul>
-  </div>);
+class TodoListItem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClickClose = this.onClickClose.bind(this);
+  }
+
+  onClickClose() {
+    var index = parseInt(this.props.index);
+    this.props.propRemoveItem(index);
+  }
+
+  render() {
+    return (<div>{this.props.value} <button type="button" onClick={this.onClickClose}>&times;</button></div>);
+  }
 }
